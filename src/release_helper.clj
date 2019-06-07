@@ -23,9 +23,13 @@
 
 
 (defn next-release-date
-  "Return the next release date."
-  []
-  (first (drop-while #(time/after? (time/local-date) %) release-dates)))
+  "Return the next release date which is *past* the given `date`. If no
+  date is given it will return the next possible release date which is
+  a week past the current date."
+  ([]
+   (next-release-date (time/plus (time/local-date) (time/weeks 1))))
+  ([date]
+   (first (drop-while #(time/after? (time/plus date (time/days 1)) %) release-dates))))
 
 (defn changes [news-file]
   (second (re-find #"(?sm)^(\* Noteworthy.*?)^\* Noteworthy" (slurp news-file))))
