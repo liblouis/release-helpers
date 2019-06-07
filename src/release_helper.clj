@@ -62,11 +62,11 @@
   announcement that can be used in an email. The file will be named
   \"announcement.txt\". It will be placed in the current working
   directory."
-  [news-file next-release-date]
+  [news-file]
   (let [changes (changes news-file)
         env {:version (extract-version changes)
              :milestone-url (extract-milestone-url changes)
-             :next-release-date (time/format "MMMM d yyyy" next-release-date)
+             :next-release-date (time/format "MMMM d yyyy" (next-release-date))
              :changes (-> changes milestone-link-to-footnote normalize-title)}]
     (shell/sh "pandoc" "--from=org" "--to=rst"
               "--output=announcement.txt"
