@@ -53,3 +53,17 @@
     (:out (shell/sh "pandoc" "--from=org" "--to=rst"
                     :in (template/render-resource "announcement.org" env)))))
 
+(defn news-post
+  "Extract the news blurb from the NEWS file and generate a markdown
+  news post that can be used in a Jekyll website. The file will be
+  named as required by Jekyll. It will be placed in the current
+  working directory."
+  [news-file]
+  (let [changes (changes news-file)
+        version (extract-version changes)
+        filename (str (time/format "yyyy-MM-dd" (time/local-date)) "-release-" version ".md")]
+    (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none"
+              "--standalone" ;; so that meta data is emitted
+              (str "--output=" filename)
+              (str "--metadata=title:" "Liblouis Release " version)
+              "--metadata=category:Liblouis" :in changes)))
