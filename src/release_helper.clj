@@ -37,6 +37,8 @@
   (second(re-find #"(?sm)Noteworthy changes in release (\d+\.\d+\.\d+) \(" changes)))
 
 (defn milestone-link-to-footnote [changes]
+  ;; we assume that the template contains a footnote with the milestone link, so we
+  ;; replace the link in the changes text with a footref
   (string/replace changes #"(?sm)\[\[https://github.com/liblouis/liblouis/milestone/\d+\?closed=1\]\[(.*)\]\]" "$1[fn:3]"))
 
 (defn normalize-title [changes]
