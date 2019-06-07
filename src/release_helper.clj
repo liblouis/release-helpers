@@ -86,3 +86,14 @@
               (str "--output=" filename)
               (str "--metadata=title:" "Liblouis Release " version)
               "--metadata=category:Liblouis" :in changes)))
+
+(defn download-index
+  "Extract the newest version from the NEWS file and generate a markdown
+  download index that can be used in a Jekyll website. The file will
+  be named \"download-index.md\". It will be placed in the current
+  working directory."
+  [news-file]
+  (let [changes (changes news-file)
+        env {:version (extract-version changes)}]
+    (spit "download-index.md" (template/render-resource "download-index.md" env))))
+
