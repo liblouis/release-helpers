@@ -44,14 +44,20 @@
 (defn normalize-title [changes]
   (string/replace changes #"(?sm)^\* Noteworthy changes in release \d+\.\d+\.\d+ \(\d+-\d+-\d+\)" "* Noteworthy changes in this release"))
 
-(defn announcement [news-file next-release-date]
+(defn announcement
+  "Extract the news blurb from the NEWS file and generate a text
+  announcement that can be used in an email. The file will be named
+  \"announcement.txt\". It will be placed in the current working
+  directory."
+  [news-file next-release-date]
   (let [changes (changes news-file)
         env {:version (extract-version changes)
              :milestone-url (extract-milestone-url changes)
              :next-release-date (time/format "MMMM d yyyy" next-release-date)
              :changes (-> changes milestone-link-to-footnote normalize-title)}]
-    (:out (shell/sh "pandoc" "--from=org" "--to=rst"
-                    :in (template/render-resource "announcement.org" env)))))
+    (shell/sh "pandoc" "--from=org" "--to=rst"
+              "--output=announcement.txt"
+              :in (template/render-resource "announcement.org" env))))
 
 (defn news-post
   "Extract the news blurb from the NEWS file and generate a markdown
