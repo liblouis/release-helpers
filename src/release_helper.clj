@@ -31,7 +31,9 @@
   ([date]
    (first (drop-while #(time/after? (time/plus date (time/days 1)) %) release-dates))))
 
-(defn changes [news-file]
+(defn changes
+  "Extract the news blurb from the NEWS file"
+  [news-file]
   (second (re-find #"(?sm)^(\* Noteworthy.*?)^\* Noteworthy" (slurp news-file))))
 
 (defn extract-milestone-url [changes]
@@ -58,42 +60,43 @@
 "))
 
 (defn announcement
-  "Extract the news blurb from the NEWS file and generate a text
-  announcement that can be used in an email. The file will be named
-  \"ANNOUNCEMENT\". It will be placed in the current working
-  directory."
-  [news-file]
-  (let [changes (changes news-file)
-        env {:version (extract-version changes)
-             :milestone-url (extract-milestone-url changes)
+  "Given the `news` for a release, generate a text announcement that can
+  be used in an email. The file will be named \"ANNOUNCEMENT\". It
+  will be placed in the current working directory."
+  [news]
+  (let [env {:version (extract-version news)
+             :milestone-url (extract-milestone-url news)
              :next-release-date (time/format "MMMM d yyyy" (next-release-date))
-             :changes (-> changes milestone-link-to-footnote normalize-title)}]
+             :changes (-> news milestone-link-to-footnote normalize-title)}]
     (shell/sh "pandoc" "--from=org" "--to=rst"
               "--output=ANNOUNCEMENT"
               :in (template/render-resource "announcement.org" env))))
 
 (defn news-post
-  "Extract the news blurb from the NEWS file and generate a markdown
-  news post that can be used in a Jekyll website. The file will be
-  named as required by Jekyll. It will be placed in the current
-  working directory."
-  [news-file]
-  (let [changes (-> (changes news-file) inject-toc)
-        version (extract-version changes)
+  "Given the `news` for a release, generate a markdown news post that
+  can be used in a Jekyll website. The file will be named as required
+  by Jekyll. It will be placed in the current working directory."
+  [news]
+  (let [news (-> news inject-toc)
+        version (extract-version news)
         filename (str (time/format "yyyy-MM-dd" (time/local-date)) "-release-" version ".md")]
     (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none"
               "--standalone" ;; so that meta data is emitted
               (str "--output=" filename)
               (str "--metadata=title:" "Liblouis Release " version)
-              "--metadata=category:Liblouis" :in changes)))
+              "--metadata=category:Liblouis" :in news)))
 
 (defn download-index
-  "Extract the newest version from the NEWS file and generate a markdown
-  download index that can be used in a Jekyll website. The file will
-  be named \"download-index.md\". It will be placed in the current
-  working directory."
-  [news-file]
-  (let [changes (changes news-file)
-        env {:version (extract-version changes)}]
+  "Given the `news` for a release, generate a markdown download index
+  that can be used in a Jekyll website. The file will be named
+  \"download-index.md\". It will be placed in the current working
+  directory."
+  [news]
+  (let [env {:version (extract-version news)}]
     (spit "download-index.md" (template/render-resource "download-index.md" env))))
 
+(defn -main [news-file]
+  (let [news (changes news-file)]
+    (announcement news)
+    (news-post news)
+    (download-index news)))
