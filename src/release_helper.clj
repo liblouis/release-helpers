@@ -44,6 +44,15 @@
 (defn normalize-title [changes]
   (string/replace changes #"(?sm)^\* Noteworthy changes in release \d+\.\d+\.\d+ \(\d+-\d+-\d+\)" "* Noteworthy changes in this release"))
 
+(defn inject-toc [changes]
+  (string/replace changes #"(?sm)\[the\s+list\s+of\s+closed\s+issues\]\]." "$0
+
+#+begin_export markdown
+* Will be replaced with the ToC
+{:toc}
+#+end_export
+"))
+
 (defn announcement
   "Extract the news blurb from the NEWS file and generate a text
   announcement that can be used in an email. The file will be named
@@ -65,7 +74,7 @@
   named as required by Jekyll. It will be placed in the current
   working directory."
   [news-file]
-  (let [changes (changes news-file)
+  (let [changes (-> (changes news-file) inject-toc)
         version (extract-version changes)
         filename (str (time/format "yyyy-MM-dd" (time/local-date)) "-release-" version ".md")]
     (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none"
