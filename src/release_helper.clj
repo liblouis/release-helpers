@@ -48,7 +48,7 @@
   (let [changes (changes news-file)
         env {:version (extract-version changes)
              :milestone-url (extract-milestone-url changes)
-             :next-release-date (format "%tB %<te %<tY" next-release-date)
+             :next-release-date (time/format "MMMM d yyyy" next-release-date)
              :changes (-> changes milestone-link-to-footnote normalize-title)}]
     (:out (shell/sh "pandoc" "--from=org" "--to=rst"
                     :in (template/render-resource "announcement.org" env)))))
