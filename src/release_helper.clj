@@ -1,7 +1,8 @@
 (ns release-helper
   (:require [java-time :as time]
             [clojure.java.shell :as shell]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [cljstache.core :as template])
   (:import java.time.format.DateTimeFormatter))
 
 ;; Release dates are always on Monday of ISO week 10, 23, 36 and 49
@@ -41,15 +42,12 @@
 (defn normalize-title [changes]
   (string/replace changes #"(?sm)^\* Noteworthy changes in release \d+\.\d+\.\d+ \(\d+-\d+-\d+\)" "* Noteworthy changes in this release"))
 
-(defn announcement-fmt []
-  (slurp "announcement.org"))
-
 (defn announcement [news-file next-release-date]
   (let [changes (changes news-file)
-        version (extract-version changes)
-        milestone-url (extract-milestone changes)
-        changes (milestone-link-to-footnote changes)
-        changes (normalize-title changes)
-        text (format (announcement-fmt)  version changes next-release-date milestone-url)]
-    (:out (shell/sh "pandoc" "--from=org" "--to=rst" :in text))))
+        env {:version (extract-version changes)
+             :milestone-url (extract-milestone changes)
+             :next-release-date (format "%tB %<te %<tY" next-release-date)
+             :changes (-> changes milestone-link-to-footnote normalize-title)}]
+    (:out (shell/sh "pandoc" "--from=org" "--to=rst"
+                    :in (template/render-resource "announcement.org" env)))))
 
