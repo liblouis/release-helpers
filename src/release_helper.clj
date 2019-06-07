@@ -5,13 +5,21 @@
   (:import java.time.format.DateTimeFormatter))
 
 ;; Release dates are always on Monday of ISO week 10, 23, 36 and 49
-(def release-weeks (cycle [10 23 36 49]))
-(def release-years (mapcat #(repeat 4 %) (iterate inc 2019)))
+(def release-weeks [10 23 36 49])
 
-(defn to-date [year week]
+(defn to-date
+  "Given a `year` and an ISO-8601 `week` return a localdate of the
+  monday of that week"
+  [week year]
   (time/local-date (DateTimeFormatter/ISO_WEEK_DATE) (format "%d-W%d-1" year week)))
 
-(def release-dates (map to-date release-years release-weeks))
+(def release-dates
+  "An infinite sequence of release dates, based on `release-weeks`"
+  (map
+   to-date
+   (cycle release-weeks) ;; weeks
+   (mapcat #(repeat (count release-weeks) %) (iterate inc 2019)))) ;; years
+
 
 (defn next-release-date
   "Return the next release date."
