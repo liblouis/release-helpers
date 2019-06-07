@@ -60,7 +60,7 @@
 (defn announcement
   "Extract the news blurb from the NEWS file and generate a text
   announcement that can be used in an email. The file will be named
-  \"announcement.txt\". It will be placed in the current working
+  \"ANNOUNCEMENT\". It will be placed in the current working
   directory."
   [news-file]
   (let [changes (changes news-file)
@@ -69,7 +69,7 @@
              :next-release-date (time/format "MMMM d yyyy" (next-release-date))
              :changes (-> changes milestone-link-to-footnote normalize-title)}]
     (shell/sh "pandoc" "--from=org" "--to=rst"
-              "--output=announcement.txt"
+              "--output=ANNOUNCEMENT"
               :in (template/render-resource "announcement.org" env))))
 
 (defn news-post
