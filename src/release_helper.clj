@@ -2,7 +2,8 @@
   (:require [java-time :as time]
             [clojure.java.shell :as shell]
             [clojure.string :as string]
-            [cljstache.core :as template])
+            [cljstache.core :as template]
+            [clojure.java.io :as io])
   (:import java.time.format.DateTimeFormatter))
 
 ;; Release dates are always on Monday of ISO week 10, 23, 36 and 49
@@ -95,8 +96,26 @@
   (let [env {:version (extract-version news)}]
     (spit "download-index.md" (template/render-resource "download-index.md" env))))
 
-(defn -main [news-file]
-  (let [news (changes news-file)]
+(defn online-documentation
+  "Given the html documentation for a release massage it so that it can
+  be placed on the Jekyll based website. Basically rip out the
+  embedded style info so that the one from the Jekyll theme is used. "
+  [documentation-file]
+  (let [doc (slurp documentation-file)
+        fixed (->
+               doc
+               (string/replace #"(?sm)<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">.*<h1 class=\"settitle\" align=\"center\">Liblouis User&rsquo;s and Programmer&rsquo;s Manual</h1>\s*" "---
+title: Liblouis User's and Programmer's Manual
+---
+")
+               (string/replace #"(?sm)\s+</body>\s+</html>" ""))]
+    (spit "liblouis.html" fixed)))
+
+(defn -main [path]
+  (let [news-file (io/file path "NEWS")
+        documentation-file (io/file path "doc" "liblouis.html")
+        news (changes news-file)]
     (announcement news)
     (news-post news)
-    (download-index news)))
+    (download-index news)
+    (online-documentation documentation-file)))
