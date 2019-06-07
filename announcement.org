@@ -1,0 +1,33 @@
+liblouis %s has been released
+
+The liblouis developer team is proud to announce the liblouis release
+%<s. The release is available for download at:
+
+    https://github.com/liblouis/liblouis/releases
+
+* Introduction
+
+Liblouis is an open-source braille translator and back-translator. It
+features support for computer, literary and math braille, supports
+contracted and uncontracted translation for many, many languages[fn:1].
+It plays an important role in an open source accessibility stack and
+is used by screenreaders such as NVDA, Orca and JAWS. A companion
+project liblouisutdml[fn:2] deals with formatting of braille.
+
+%s
+
+* Next release
+
+The next release will be published on %tB %<te %<tY so please keep
+up the excellent work and keep those improvements coming.
+
+Share and Enjoy!
+
+-- Christian Egli, on behalf of the liblouis developers
+
+* Footnotes
+
+[fn:1]  https://github.com/liblouis/liblouis/tree/master/tables
+[fn:2]  https://github.com/liblouis/liblouisutdml
+[fn:3]  %s
+
