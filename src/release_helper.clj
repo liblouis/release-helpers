@@ -76,11 +76,11 @@
 (defn news-post
   "Given the `news` for a release, generate a markdown news post that
   can be used in a Jekyll website. The file will be named as required
-  by Jekyll. It will be placed in the current working directory."
-  [news]
+  by Jekyll. It will be placed in `target-path`."
+  [news target-path]
   (let [news (-> news inject-toc)
         version (extract-version news)
-        filename (str (time/format "yyyy-MM-dd" (time/local-date)) "-release-" version ".md")]
+        filename (.getPath (io/file target-path (str (time/format "yyyy-MM-dd" (time/local-date)) "-release-" version ".md")))]
     (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none"
               "--standalone" ;; so that meta data is emitted
               (str "--output=" filename)
@@ -89,33 +89,34 @@
 
 (defn download-index
   "Given the `news` for a release, generate a markdown download index
-  that can be used in a Jekyll website. The file will be named
-  \"download-index.md\". It will be placed in the current working
-  directory."
-  [news]
+  that can be used in a Jekyll website. The file will be placed in
+  `target-path`."
+  [news target-path]
   (let [env {:version (extract-version news)}]
-    (spit "download-index.md" (template/render-resource "download-index.md" env))))
+    (spit target-path (template/render-resource "download-index.md" env))))
 
 (defn online-documentation
-  "Given the html documentation for a release massage it so that it can
-  be placed on the Jekyll based website. Basically rip out the
-  embedded style info so that the one from the Jekyll theme is used. "
-  [documentation-file]
+  "Given the html documentation for a release massage it so that it
+  can be placed on the Jekyll based website. Basically rip out the
+  embedded style info so that the one from the Jekyll theme is used.
+  The file will be placed in `target-path`."
+  [documentation-file target-path]
   (let [doc (slurp documentation-file)
         fixed (->
                doc
                (string/replace #"(?sm)<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">.*<h1 class=\"settitle\" align=\"center\">Liblouis User&rsquo;s and Programmer&rsquo;s Manual</h1>\s*" "---
 title: Liblouis User's and Programmer's Manual
 ---
+
 ")
                (string/replace #"(?sm)\s+</body>\s+</html>" ""))]
-    (spit "liblouis.html" fixed)))
+    (spit target-path fixed)))
 
-(defn -main [path]
-  (let [news-file (io/file path "NEWS")
-        documentation-file (io/file path "doc" "liblouis.html")
+(defn -main [source-path website-path]
+  (let [news-file (io/file source-path "NEWS")
+        documentation-file (io/file source-path "doc" "liblouis.html")
         news (changes news-file)]
     (announcement news)
-    (news-post news)
-    (download-index news)
-    (online-documentation documentation-file)))
+    (news-post news (io/file website-path "_posts"))
+    (download-index news (io/file website-path "downloads" "index.md"))
+    (online-documentation documentation-file (io/file website-path "documentation" "liblouis.html"))))

@@ -10,8 +10,18 @@ release. In particular it creates
 
 * Usage
 
+First build liblouis
+
 #+BEGIN_SRC shell
-clj -m release-helper ~/src/liblouis
+cd ~/src/liblouis
+make dist
+#+END_SRC
+
+Then run the release-helper script. Specify where the source to
+liblouis and the liblouis website is located
+
+#+BEGIN_SRC shell
+clj -m release-helper ~/src/liblouis ~/src/liblouis.github.io
 #+END_SRC
 
 * Prerequisites
