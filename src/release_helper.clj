@@ -30,7 +30,7 @@
 (defn changes [news-file]
   (second (re-find #"(?sm)^(\* Noteworthy.*?)^\* Noteworthy" (slurp news-file))))
 
-(defn extract-milestone [changes]
+(defn extract-milestone-url [changes]
   (re-find #"(?sm)https://github.com/liblouis/liblouis/milestone/\d+\?closed=1" changes))
 
 (defn extract-version [changes]
@@ -45,7 +45,7 @@
 (defn announcement [news-file next-release-date]
   (let [changes (changes news-file)
         env {:version (extract-version changes)
-             :milestone-url (extract-milestone changes)
+             :milestone-url (extract-milestone-url changes)
              :next-release-date (format "%tB %<te %<tY" next-release-date)
              :changes (-> changes milestone-link-to-footnote normalize-title)}]
     (:out (shell/sh "pandoc" "--from=org" "--to=rst"
