@@ -29,7 +29,8 @@ clj -m release-helper ~/src/liblouis ~/src/liblouis.github.io
 - You need the Clojure cli tools. Install them tools as described in
   the [[https://clojure.org/guides/getting_started][Getting Started Guide]].
 - You need [[https://pandoc.org/][pandoc]].
-
+- I recommend you use [[https://hub.github.com/][hub]] to create github releases from the command
+  line
 
 * Contributing
 If you have any improvements or comments please feel free to file a
