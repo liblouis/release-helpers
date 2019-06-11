@@ -73,17 +73,25 @@
               "--output=ANNOUNCEMENT"
               :in (template/render-resource "announcement.org" env))))
 
+(defn news-post-name
+  "Extract the version from a `news` and combine with todays date to
+  generate a post name suitable for a Jekyll website at location
+  `target-path`."
+  [news target-path]
+  (let [version (extract-version news)
+        iso-today (time/format "yyyy-MM-dd" (time/local-date))]
+    (.getPath (io/file target-path (format "%s-release-%s.md" iso-today version)))))
+
 (defn news-post
   "Given the `news` for a release, generate a markdown news post that
-  can be used in a Jekyll website. The file will be named as required
-  by Jekyll. It will be placed in `target-path`."
+  can be used in a Jekyll website. The file will be placed in
+  `target-path`."
   [news target-path]
   (let [news (-> news inject-toc)
-        version (extract-version news)
-        filename (.getPath (io/file target-path (str (time/format "yyyy-MM-dd" (time/local-date)) "-release-" version ".md")))]
+        version (extract-version news)]
     (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none"
               "--standalone" ;; so that meta data is emitted
-              (str "--output=" filename)
+              (str "--output=" target-path)
               (str "--metadata=title:" "Liblouis Release " version)
               "--metadata=category:Liblouis" :in news)))
 
@@ -112,11 +120,39 @@ title: Liblouis User's and Programmer's Manual
                (string/replace #"(?sm)\s+</body>\s+</html>" ""))]
     (spit target-path fixed)))
 
+(defn create-release-description
+  [news target-path]
+  (let [version (extract-version news)
+        markdown (:out (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none" :in (-> news normalize-title)))
+        env {:version version
+             :changes markdown}
+        description (template/render-resource "release-file.txt" env)]
+    (spit target-path description)))
+
+(defn create-release-command
+  [news description-file]
+  (let [version (extract-version news)
+        tag (format " v%s" version)
+        zip (format "liblouis-%s.zip" version)
+        tar (format "liblouis-%s.tar.gz" version)]
+    (format "hub release create -a %s -a %s -F %s %s" zip tar (.getName description-file) tag)))
+
 (defn -main [source-path website-path]
   (let [news-file (io/file source-path "NEWS")
+        news (changes news-file)
+        news-post-file (news-post-name news website-path)
+        download-index-file (io/file website-path "downloads" "index.md")
         documentation-file (io/file source-path "doc" "liblouis.html")
-        news (changes news-file)]
+        online-documentation-file (io/file website-path "documentation" "liblouis.html")
+        release-description-file (io/file source-path "release-description.txt")
+        env {:source-path source-path
+             :news-post news-post-file
+             :download-index (.getPath download-index-file)
+             :online-documentation (.getPath online-documentation-file)
+             :command (create-release-command news release-description-file)}]
     (announcement news)
-    (news-post news (io/file website-path "_posts"))
-    (download-index news (io/file website-path "downloads" "index.md"))
-    (online-documentation documentation-file (io/file website-path "documentation" "liblouis.html"))))
+    (news-post news news-post-file)
+    (download-index news download-index-file)
+    (online-documentation documentation-file online-documentation-file)
+    (create-release-description news release-description-file)
+    (println (template/render-resource "feedback.txt" env))))

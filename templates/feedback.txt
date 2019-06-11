@@ -1,0 +1,13 @@
+
+The release artifacts have been created.
+
+- {{news-post}}
+- {{download-index}}
+- {{online-documentation}}
+
+Commit them
+
+Finally create the release using hub
+
+  cd {{source-path}}
+  {{command}}
