@@ -24,6 +24,31 @@ liblouis and the liblouis website is located
 clj -m release-helper ~/src/liblouis ~/src/liblouis.github.io
 #+END_SRC
 
+* Rationale
+
+Why do we need these scripts in the first place? Well, creating a
+release is quite laborious but fairly mundane work as described in the
+[[https://github.com/liblouis/liblouis/blob/master/HACKING][HACKING]] file. Automating most of this certainly makes sense.
+
+On the other hand you can rightfully ask yourself why we are doing
+this. The changes for example are listed in three different places
+([[http://liblouis.org/][website]], [[https://github.com/liblouis/liblouis/releases][GitHub release page]], [[https://www.freelists.org/post/liblouis-liblouisxml/liblouis-3100-has-been-released][announce email]]) in two different
+formats. Is this really needed?
+
+Not having a separate website would certainly simplify things and
+would partially obliviate the need for the release-helper scripts. At
+the time it seemed easier for the user to have a website where all the
+relevant information could be centrally organized, e.g. news,
+downloads, online documentation, etc. The downloads have pretty much
+been superseded by the GitHub releases page, but nightly snapshots are
+still easier to find on the website.
+
+Another simplification might be to have all changes in [[https://daringfireball.net/projects/markdown/][markdown]]. We
+could put markdown in the announce email. That would mean no more
+converting of formats. On the other hands I personally love editing in
+[[https://orgmode.org/][orgmode]] and I would not want to miss it.
+
+
 * Prerequisites
 
 - You need the Clojure cli tools. Install them tools as described in
