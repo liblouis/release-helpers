@@ -155,4 +155,6 @@ title: Liblouis User's and Programmer's Manual
     (download-index news download-index-file)
     (online-documentation documentation-file online-documentation-file)
     (create-release-description news release-description-file)
-    (println (template/render-resource "feedback.txt" env))))
+    (println (template/render-resource "feedback.txt" env))
+    ;; see https://clojureverse.org/t/why-doesnt-my-program-exit/3754/7 why exit is needed
+    (System/exit 0)))
