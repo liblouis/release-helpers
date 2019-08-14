@@ -24,6 +24,31 @@ liblouis and the liblouis website is located
 clj -m release-helper ~/src/liblouis ~/src/liblouis.github.io
 #+END_SRC
 
+* Native Image
+
+With the help of [[https://github.com/taylorwood/clj.native-image][clj.native-image]] you can build native images for the
+scripts.
+
+Install [[https://www.graalvm.org/downloads/][GraalVM]] and set ~$GRAALVM_HOME~.
+
+#+BEGIN_SRC shell
+export GRAALVM_HOME=/path/to/graalvm
+clojure -A:native-image
+./release_helper ~/src/liblouis ~/src/liblouis.github.io
+#+END_SRC
+
+Unfortunatelly at the moment GraalVM doesn't like some of the code.
+
+#+BEGIN_EXAMPLE
+Warning: Reflection method java.lang.Class.getMethod invoked at clojure.lang.Reflector.getMethods(Reflector.java:511)
+Warning: Reflection method java.lang.Class.getMethods invoked at clojure.lang.Reflector.getAsMethodOfAccessibleBase(Reflector.java:240)
+Warning: Reflection method java.lang.Class.getMethods invoked at clojure.lang.Reflector.getMethods(Reflector.java:535)
+Warning: Reflection method java.lang.Class.getMethods invoked at clojure.lang.Reflector.getMethods(Reflector.java:498)
+Warning: Reflection method java.lang.Class.getMethods invoked at clojure.lang.Reflector.getAsMethodOfAccessibleBase(Reflector.java:229)
+Warning: Reflection method java.lang.Class.getFields invoked at clojure.lang.Reflector.getField(Reflector.java:487)
+Warning: Aborting stand-alone image build due to reflection use without configuration.
+#+END_EXAMPLE
+
 * Rationale
 
 Why do we need these scripts in the first place? Well, creating a

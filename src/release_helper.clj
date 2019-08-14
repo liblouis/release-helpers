@@ -1,4 +1,5 @@
 (ns release-helper
+  (:gen-class)
   (:require [java-time :as time]
             [clojure.java.shell :as shell]
             [clojure.string :as string]

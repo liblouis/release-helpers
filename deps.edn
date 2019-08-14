@@ -1,4 +1,14 @@
 {:deps
  {clojure.java-time {:mvn/version "0.3.2"}
   cljstache {:mvn/version "2.0.1"}}
- :paths ["src" "templates"]}
+ :paths ["src" "templates"]
+ :aliases {:native-image
+           {:main-opts ["-m clj.native-image release_helper"
+                        "--initialize-at-build-time"
+                        ;; optional native image name override
+                        "-H:Name=release_helper"]
+            :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
+            :extra-deps
+            {clj.native-image
+             {:git/url "https://github.com/taylorwood/clj.native-image.git"
+              :sha "7708e7fd4572459c81f6a6b8e44c96f41cdd92d4"}}}}}
