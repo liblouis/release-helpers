@@ -62,15 +62,14 @@
 
 (defn announcement
   "Given the `news` for a release, generate a text announcement that can
-  be used in an email. The file will be named \"ANNOUNCEMENT\". It
-  will be placed in the current working directory."
-  [news]
+  be used in an email. The file will be placed in `target-path`."
+  [news target-path]
   (let [env {:version (extract-version news)
              :milestone-url (extract-milestone-url news)
              :next-release-date (time/format "MMMM d yyyy" (next-release-date))
              :changes (-> news milestone-link-to-footnote normalize-title)}]
     (shell/sh "pandoc" "--from=org" "--to=rst"
-              "--output=ANNOUNCEMENT"
+              (format "--output=%s" (.getPath target-path))
               :in (template/render-resource "announcement.org" env))))
 
 (defn news-post-name
@@ -145,12 +144,13 @@ title: Liblouis User's and Programmer's Manual
         documentation-file (io/file source-path "doc" "liblouis.html")
         online-documentation-file (io/file website-path "documentation" "liblouis.html")
         release-description-file (io/file source-path "release-description.txt")
+        announcement-file (io/file source-path "ANNOUNCEMENT")
         env {:source-path source-path
              :news-post news-post-file
              :download-index (.getPath download-index-file)
              :online-documentation (.getPath online-documentation-file)
              :command (create-release-command news release-description-file)}]
-    (announcement news)
+    (announcement news announcement-file)
     (news-post news news-post-file)
     (download-index news download-index-file)
     (online-documentation documentation-file online-documentation-file)
