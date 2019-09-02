@@ -51,6 +51,9 @@
 (defn normalize-title [changes]
   (string/replace changes #"(?sm)^\* Noteworthy changes in release \d+\.\d+\.\d+ \(\d+-\d+-\d+\)" "* Noteworthy changes in this release"))
 
+(defn drop-title [changes]
+  (string/replace changes #"(?sm)^\* Noteworthy changes in release \d+\.\d+\.\d+ \(\d+-\d+-\d+\)" ""))
+
 (defn inject-toc [changes]
   (string/replace changes #"(?sm)\[the\s+list\s+of\s+closed\s+issues\]\]." "$0
 
@@ -92,7 +95,7 @@
               "--standalone" ;; so that meta data is emitted
               (str "--output=" target-path)
               (str "--metadata=title:" "Liblouis Release " version)
-              "--metadata=category:Liblouis" :in news)))
+              "--metadata=category:Liblouis" :in (-> news drop-title))))
 
 (defn download-index
   "Given the `news` for a release, generate a markdown download index
