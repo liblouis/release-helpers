@@ -79,7 +79,7 @@
   [news target-path]
   (let [version (extract-version news)
         iso-today (time/format "yyyy-MM-dd" (time/local-date))]
-    (.getPath (io/file target-path (format "%s-release-%s.md" iso-today version)))))
+    (.getPath (io/file target-path "_posts" (format "%s-release-%s.md" iso-today version)))))
 
 (defn news-post
   "Given the `news` for a release, generate a markdown news post that
