@@ -136,9 +136,8 @@ title: Liblouis User's and Programmer's Manual
   (let [version (extract-version news)
         tag (format " v%s" version)
         zip (format "liblouis-%s.zip" version)
-        tar (format "liblouis-%s.tar.gz" version)
-        win32 (format "liblouis-%s-win32.zip" version)]
-    (format "hub release create -a %s -a %s -a %s -F %s %s"  win32 zip tar (.getName description-file) tag)))
+        tar (format "liblouis-%s.tar.gz" version)]
+    (format "hub release create -a %s -a %s -F %s %s" zip tar (.getName description-file) tag)))
 
 (defn -main [source-path website-path]
   (let [news-file (io/file source-path "NEWS")
