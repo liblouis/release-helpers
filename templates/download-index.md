@@ -11,7 +11,7 @@ binary contains the library and all the tools and can be used as-is.
 |Summary|File|
 |---------|
 |Liblouis (source)|[liblouis-{{version}}.tar.gz](https://github.com/liblouis/liblouis/releases/download/v{{version}}/liblouis-{{version}}.tar.gz), [liblouis-{{version}}.zip](https://github.com/liblouis/liblouis/releases/download/v{{version}}/liblouis-{{version}}.zip)|
-|Liblouis (Windows build)|[liblouis-win32.zip](https://github.com/liblouis/liblouis/releases/download/v{{version}}/liblouis-win32.zip), [liblouis-win64.zip](https://github.com/liblouis/liblouis/releases/download/v{{version}}/liblouis-win64.zip)|
+|Liblouis (Windows build)|[liblouis-win32.zip](https://github.com/liblouis/liblouis/releases/download/v{{version}}/liblouis-{{version}}-win32.zip), [liblouis-win64.zip](https://github.com/liblouis/liblouis/releases/download/v{{version}}/liblouis-{{version}}-win64.zip)|
 |Liblouisutdml (source)|[liblouisutdml-2.7.1.tar.gz](https://github.com/liblouis/liblouisutdml/archive/v2.7.1.tar.gz)|
 {: .table}
 
