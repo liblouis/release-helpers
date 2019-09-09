@@ -38,7 +38,7 @@
   (second (re-find #"(?sm)^(\* Noteworthy.*?)^\* Noteworthy" (slurp news-file))))
 
 (defn extract-milestone-url [changes]
-  (re-find #"(?sm)https://github.com/liblouis/liblouis/milestone/\d+\?closed=1" changes))
+  (re-find #"(?sm)https://github.com/liblouis/liblouis(?:utdml)?/milestone/\d+\?closed=1" changes))
 
 (defn extract-version [changes]
   (second(re-find #"(?sm)Noteworthy changes in release (\d+\.\d+\.\d+) \(" changes)))
@@ -46,7 +46,7 @@
 (defn milestone-link-to-footnote [changes]
   ;; we assume that the template contains a footnote with the milestone link, so we
   ;; replace the link in the changes text with a footref
-  (string/replace changes #"(?sm)\[\[https://github.com/liblouis/liblouis/milestone/\d+\?closed=1\]\[(.*)\]\]" "$1[fn:3]"))
+  (string/replace changes #"(?sm)\[\[https://github.com/liblouis/liblouis(?:utdml)?/milestone/\d+\?closed=1\]\[(.*)\]\]" "$1[fn:3]"))
 
 (defn normalize-title [changes]
   (string/replace changes #"(?sm)^\* Noteworthy changes in release \d+\.\d+\.\d+ \(\d+-\d+-\d+\)" "* Noteworthy changes in this release"))
@@ -66,36 +66,36 @@
 (defn announcement
   "Given the `news` for a release, generate a text announcement that can
   be used in an email. The file will be placed in `target-path`."
-  [news target-path]
+  [project news target-path]
   (let [env {:version (extract-version news)
              :milestone-url (extract-milestone-url news)
              :next-release-date (time/format "MMMM d yyyy" (next-release-date))
              :changes (-> news milestone-link-to-footnote normalize-title)}]
     (shell/sh "pandoc" "--from=org" "--to=rst"
               (format "--output=%s" (.getPath target-path))
-              :in (template/render-resource "announcement.org" env))))
+              :in (template/render-resource (format "announcement-%s.org" project) env))))
 
 (defn news-post-name
   "Extract the version from a `news` and combine with todays date to
   generate a post name suitable for a Jekyll website at location
   `target-path`."
-  [news target-path]
+  [project news target-path]
   (let [version (extract-version news)
         iso-today (time/format "yyyy-MM-dd" (time/local-date))]
-    (.getPath (io/file target-path "_posts" (format "%s-release-%s.md" iso-today version)))))
+    (.getPath (io/file target-path "_posts" (format "%s-%s-release-%s.md" iso-today project version)))))
 
 (defn news-post
   "Given the `news` for a release, generate a markdown news post that
   can be used in a Jekyll website. The file will be placed in
   `target-path`."
-  [news target-path]
+  [project news target-path]
   (let [news (-> news inject-toc)
         version (extract-version news)]
     (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none"
               "--standalone" ;; so that meta data is emitted
               (str "--output=" target-path)
-              (str "--metadata=title:" "Liblouis Release " version)
-              "--metadata=category:Liblouis" :in (-> news drop-title))))
+              (str "--metadata=title:" (format "%s Release " (string/capitalize project)) version)
+              (format "--metadata=category:%s" (string/capitalize project)) :in (-> news drop-title))))
 
 (defn download-index
   "Given the `news` for a release, generate a markdown download index
@@ -110,54 +110,57 @@
   can be placed on the Jekyll based website. Basically rip out the
   embedded style info so that the one from the Jekyll theme is used.
   The file will be placed in `target-path`."
-  [documentation-file target-path]
+  [project documentation-file target-path]
   (let [doc (slurp documentation-file)
-        fixed (->
-               doc
-               (string/replace #"(?sm)<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">.*<h1 class=\"settitle\" align=\"center\">Liblouis User&rsquo;s and Programmer&rsquo;s Manual</h1>\s*" "---
-title: Liblouis User's and Programmer's Manual
+        title (format "---
+title: %s User's and Programmer's Manual
 ---
 
-")
+" (string/capitalize project))
+        fixed (->
+               doc
+               (string/replace #"(?sm)<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">.*<h1 class=\"settitle\" align=\"center\">Liblouis(?:utdml)? User&rsquo;s and Programmer&rsquo;s Manual</h1>\s*" title)
                (string/replace #"(?sm)\s+</body>\s+</html>" ""))]
     (spit target-path fixed)))
 
 (defn create-release-description
-  [news target-path]
+  [project news target-path]
   (let [version (extract-version news)
         markdown (:out (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none" :in (-> news normalize-title)))
-        env {:version version
+        env {:project project
+             :version version
              :changes markdown}
         description (template/render-resource "release-file.txt" env)]
     (spit target-path description)))
 
 (defn create-release-command
-  [news description-file]
+  [project news description-file]
   (let [version (extract-version news)
         tag (format " v%s" version)
-        zip (format "liblouis-%s.zip" version)
-        tar (format "liblouis-%s.tar.gz" version)]
+        zip (format "%s-%s.zip" project version)
+        tar (format "%s-%s.tar.gz" project version)]
     (format "hub release create -a %s -a %s -F %s %s" zip tar (.getName description-file) tag)))
 
 (defn -main [source-path website-path]
-  (let [news-file (io/file source-path "NEWS")
+  (let [project (if (string/includes? source-path "utdml") "liblouisutdml" "liblouis")
+        news-file (io/file source-path "NEWS")
         news (changes news-file)
-        news-post-file (news-post-name news website-path)
+        news-post-file (news-post-name project news website-path)
         download-index-file (io/file website-path "downloads" "index.md")
-        documentation-file (io/file source-path "doc" "liblouis.html")
-        online-documentation-file (io/file website-path "documentation" "liblouis.html")
+        documentation-file (io/file source-path "doc" (format "%s.html" project))
+        online-documentation-file (io/file website-path "documentation" (format "%s.html" project))
         release-description-file (io/file source-path "release-description.txt")
         announcement-file (io/file source-path "ANNOUNCEMENT")
         env {:source-path source-path
              :news-post news-post-file
              :download-index (.getPath download-index-file)
              :online-documentation (.getPath online-documentation-file)
-             :command (create-release-command news release-description-file)}]
-    (announcement news announcement-file)
-    (news-post news news-post-file)
+             :command (create-release-command project news release-description-file)}]
+    (announcement project news announcement-file)
+    (news-post project news news-post-file)
     (download-index news download-index-file)
-    (online-documentation documentation-file online-documentation-file)
-    (create-release-description news release-description-file)
+    (online-documentation project documentation-file online-documentation-file)
+    (create-release-description project news release-description-file)
     (println (template/render-resource "feedback.txt" env))
     ;; see https://clojureverse.org/t/why-doesnt-my-program-exit/3754/7 why exit is needed
     (System/exit 0)))

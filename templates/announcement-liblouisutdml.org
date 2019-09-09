@@ -1,0 +1,27 @@
+liblouisutdml {{version}} has been released
+
+The liblouis developer team is proud to announce the liblouisutdml
+release {{version}}. The release is available for download at:
+
+    https://github.com/liblouis/liblouisutdml/releases
+
+* Introduction
+
+Liblouisutdml is an open-source braille formatter. The formatting can
+be configured via a style sheet. By incorporating Liblouis[fn:1] it
+provides the capability of translating any XML or plain text file into
+properly transcribed, embosser-ready braille. This includes
+translation into grade two, mathematical codes, etc.
+
+{{changes}}
+
+Share and Enjoy!
+
+-- Christian Egli, on behalf of the liblouis developers
+
+* Footnotes
+
+[fn:1]  https://github.com/liblouis/liblouis
+[fn:3]  {{milestone-url}}
+
+
