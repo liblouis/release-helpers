@@ -25,7 +25,7 @@ clj -m release-helper ~/src/liblouis ~/src/liblouis.github.io
 #+END_SRC
 
 ** Liblouisutdml
-The script works /mostly/ for creating a liblouisutdml release:
+The script also works for creating a liblouisutdml release:
 
 #+BEGIN_SRC shell
 cd ~/src/liblouisutdml
@@ -40,11 +40,7 @@ clj -m release-helper ~/src/liblouisutdml ~/src/liblouis.github.io
 #+END_SRC
 
 All the generated artifacts in ~~/src/liblouisutdml~ and
-~~/src/liblouis.github.io~ should be correct with the exception of
-~~/src/liblouis.github.io/downloads/index.md~. We'd have to know the
-versions of both projects in order to generate this corrctly. Right
-now the release helper just looks at one project. Just fix the
-download index manually.
+~~/src/liblouis.github.io~ should be correct.
 
 * Rationale
 

@@ -101,9 +101,18 @@
   "Given the `news` for a release, generate a markdown download index
   that can be used in a Jekyll website. The file will be placed in
   `target-path`."
-  [news target-path]
-  (let [env {:version (extract-version news)}]
-    (spit target-path (template/render-resource "download-index.md" env))))
+  [project news target-path]
+  (let [version (extract-version news)
+        content (slurp target-path)
+        new-content (if (= project "liblouis")
+                      (-> content
+                          (string/replace #"liblouis-(\d+\.\d+\.\d+)(\.tar\.gz|\.zip)" (format "liblouis-%s$2" version))
+                          (string/replace #"liblouis-(\d+\.\d+\.\d+)-(win32\.zip|win64\.zip)" (format "liblouis-%s-$2" version))
+                          (string/replace #"download/v(\d+\.\d+\.\d+)/liblouis-" (format "download/v%s/liblouis-" version)))
+                      (-> content
+                          (string/replace #"liblouisutdml-(\d+\.\d+\.\d+)(\.tar\.gz|\.zip)" (format "liblouisutdml-%s$2" version))
+                          (string/replace #"download/v(\d+\.\d+\.\d+)/liblouisutdml-" (format "download/v%s/liblouisutdml-" version))))]
+    (spit target-path new-content)))
 
 (defn online-documentation
   "Given the html documentation for a release massage it so that it
@@ -158,7 +167,7 @@ title: %s User's and Programmer's Manual
              :command (create-release-command project news release-description-file)}]
     (announcement project news announcement-file)
     (news-post project news news-post-file)
-    (download-index news download-index-file)
+    (download-index project news download-index-file)
     (online-documentation project documentation-file online-documentation-file)
     (create-release-description project news release-description-file)
     (println (template/render-resource "feedback.txt" env))
