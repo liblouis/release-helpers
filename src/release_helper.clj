@@ -104,14 +104,12 @@
   [project news target-path]
   (let [version (extract-version news)
         content (slurp target-path)
-        new-content (if (= project "liblouis")
-                      (-> content
-                          (string/replace #"liblouis-(\d+\.\d+\.\d+)(\.tar\.gz|\.zip)" (format "liblouis-%s$2" version))
-                          (string/replace #"liblouis-(\d+\.\d+\.\d+)-(win32\.zip|win64\.zip)" (format "liblouis-%s-$2" version))
-                          (string/replace #"download/v(\d+\.\d+\.\d+)/liblouis-" (format "download/v%s/liblouis-" version)))
-                      (-> content
-                          (string/replace #"liblouisutdml-(\d+\.\d+\.\d+)(\.tar\.gz|\.zip)" (format "liblouisutdml-%s$2" version))
-                          (string/replace #"download/v(\d+\.\d+\.\d+)/liblouisutdml-" (format "download/v%s/liblouisutdml-" version))))]
+        regexps {"liblouis"      [[#"liblouis-(\d+\.\d+\.\d+)(\.tar\.gz|\.zip)" (format "liblouis-%s$2" version)]
+                                  [#"liblouis-(\d+\.\d+\.\d+)-(win32\.zip|win64\.zip)" (format "liblouis-%s-$2" version)]
+                                  [#"download/v(\d+\.\d+\.\d+)/liblouis-" (format "download/v%s/liblouis-" version)]]
+                 "liblouisutdml" [[#"liblouisutdml-(\d+\.\d+\.\d+)(\.tar\.gz|\.zip)" (format "liblouisutdml-%s$2" version)]
+                                  [#"download/v(\d+\.\d+\.\d+)/liblouisutdml-" (format "download/v%s/liblouisutdml-" version)]]}
+        new-content (reduce (fn [content [regexp replacement]] (string/replace content regexp replacement)) content (get regexps project))]
     (spit target-path new-content)))
 
 (defn online-documentation
