@@ -7,6 +7,8 @@
             [clojure.java.io :as io])
   (:import java.time.format.DateTimeFormatter))
 
+(set! *warn-on-reflection* true)
+
 ;; Release dates are always on Monday of ISO week 10, 23, 36 and 49
 (def release-weeks [10 23 36 49])
 
@@ -81,7 +83,7 @@
   [news target-path]
   (let [version (extract-version news)
         iso-today (time/format "yyyy-MM-dd" (time/local-date))]
-    (.getPath (io/file target-path (format "%s-release-%s.md" iso-today version)))))
+    (.getPath ^java.io.File (io/file target-path (format "%s-release-%s.md" iso-today version)))))
 
 (defn news-post
   "Given the `news` for a release, generate a markdown news post that
@@ -136,7 +138,7 @@ title: Liblouis User's and Programmer's Manual
         tag (format " v%s" version)
         zip (format "liblouis-%s.zip" version)
         tar (format "liblouis-%s.tar.gz" version)]
-    (format "hub release create -a %s -a %s -F %s %s" zip tar (.getName description-file) tag)))
+    (format "hub release create -a %s -a %s -F %s %s" zip tar (.getName ^java.io.File description-file) tag)))
 
 (defn -main [source-path website-path]
   (let [news-file (io/file source-path "NEWS")
@@ -148,8 +150,8 @@ title: Liblouis User's and Programmer's Manual
         release-description-file (io/file source-path "release-description.txt")
         env {:source-path source-path
              :news-post news-post-file
-             :download-index (.getPath download-index-file)
-             :online-documentation (.getPath online-documentation-file)
+             :download-index (.getPath ^java.io.File download-index-file)
+             :online-documentation (.getPath ^java.io.File online-documentation-file)
              :command (create-release-command news release-description-file)}]
     (announcement news)
     (news-post news news-post-file)
