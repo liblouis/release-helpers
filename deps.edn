@@ -8,7 +8,7 @@
                         "-H:ReflectionConfigurationFiles=META-INF/native-image/reflect-config.json"
                         "-H:ResourceConfigurationFiles=META-INF/native-image/resource-config.json"
                         ;; optional native image name override
-                        "-H:Name=release_helper"]
+                        "-H:Name=liblouis_release_helper"]
             :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
             :extra-deps
             {clj.native-image
