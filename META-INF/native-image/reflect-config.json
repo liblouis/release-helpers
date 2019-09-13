@@ -1,0 +1,656 @@
+[
+{
+  "name":"cljstache.core.Section",
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"clojure.asm.Type"
+},
+{
+  "name":"clojure.core.server__init"
+},
+{
+  "name":"clojure.core__init"
+},
+{
+  "name":"clojure.java.shell__init"
+},
+{
+  "name":"clojure.lang.AFunction",
+  "allPublicFields":true,
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.APersistentMap",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.Compiler",
+  "allPublicFields":true
+},
+{
+  "name":"clojure.lang.IChunk",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.IEditableCollection"
+},
+{
+  "name":"clojure.lang.IFn$LLLO",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.IFn$OLLO",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.IFn$OOL",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.IHashEq",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.IKeywordLookup",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.ILookup",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.ILookupThunk",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.IObj",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.IPersistentMap",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.IRecord",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.ISeq"
+},
+{
+  "name":"clojure.lang.IType",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.Keyword"
+},
+{
+  "name":"clojure.lang.LazySeq",
+  "allPublicConstructors":true
+},
+{
+  "name":"clojure.lang.LockingTransaction",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.MapEntry",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.MapEquivalence"
+},
+{
+  "name":"clojure.lang.MethodImplCache",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.Namespace",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.Numbers",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.PersistentHashMap",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.PersistentQueue",
+  "allPublicMethods":true,
+  "fields":[{"name":"EMPTY"}]
+},
+{
+  "name":"clojure.lang.PersistentUnrolledMap",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.PersistentUnrolledVector",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.RT",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.RecordIterator",
+  "allPublicConstructors":true
+},
+{
+  "name":"clojure.lang.Seqable"
+},
+{
+  "name":"clojure.lang.Symbol",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.Util",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.Var",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.Volatile",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.set__init"
+},
+{
+  "name":"clojure.spec.alpha__init"
+},
+{
+  "name":"java.io.File",
+  "allPublicMethods":true
+},
+{
+  "name":"java.io.Serializable",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.Class",
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.Comparable",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.Enum",
+  "methods":[{"name":"compareTo","parameterTypes":["java.lang.Object"] }]
+},
+{
+  "name":"java.lang.Exception"
+},
+{
+  "name":"java.lang.IllegalArgumentException",
+  "allPublicConstructors":true
+},
+{
+  "name":"java.lang.Iterable",
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.Math",
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.NullPointerException",
+  "allPublicConstructors":true
+},
+{
+  "name":"java.lang.Number"
+},
+{
+  "name":"java.lang.Object",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.String",
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.StringBuilder",
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java.lang.System",
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.UnsupportedOperationException",
+  "allPublicConstructors":true
+},
+{
+  "name":"java.lang.reflect.Field",
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.reflect.Method",
+  "allPublicMethods":true
+},
+{
+  "name":"java.sql.Date",
+  "allPublicMethods":true
+},
+{
+  "name":"java.sql.Time",
+  "allPublicMethods":true
+},
+{
+  "name":"java.sql.Timestamp",
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java.time.Clock",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"java.time.DateTimeException",
+  "allPublicConstructors":true
+},
+{
+  "name":"java.time.DayOfWeek",
+  "allPublicFields":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.Duration",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.Instant",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.LocalDate",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.LocalDateTime",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.LocalTime",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.Month",
+  "allPublicFields":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.MonthDay",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.OffsetDateTime",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.OffsetTime",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.Period",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.Year",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.YearMonth",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.ZoneId",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.ZoneOffset",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.ZonedDateTime",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.chrono.ChronoLocalDate",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.chrono.ChronoLocalDateTime",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.chrono.ChronoPeriod",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.chrono.ChronoZonedDateTime",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.chrono.Chronology",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.format.DateTimeFormatter",
+  "allPublicFields":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.format.DateTimeFormatterBuilder"
+},
+{
+  "name":"java.time.format.DateTimeParseException"
+},
+{
+  "name":"java.time.format.ResolverStyle",
+  "allPublicFields":true
+},
+{
+  "name":"java.time.temporal.ChronoField",
+  "allPublicFields":true
+},
+{
+  "name":"java.time.temporal.ChronoUnit",
+  "allPublicFields":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.temporal.IsoFields",
+  "allPublicFields":true
+},
+{
+  "name":"java.time.temporal.JulianFields",
+  "allPublicFields":true
+},
+{
+  "name":"java.time.temporal.Temporal",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.temporal.TemporalAccessor",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.temporal.TemporalAdjuster",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.temporal.TemporalAdjusters",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.temporal.TemporalAmount",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.temporal.TemporalField",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.temporal.TemporalUnit",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.temporal.UnsupportedTemporalTypeException",
+  "allPublicConstructors":true
+},
+{
+  "name":"java.time.temporal.ValueRange",
+  "allPublicMethods":true
+},
+{
+  "name":"java.time.zone.ZoneRules",
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.Calendar",
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.Date",
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.GregorianCalendar",
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.Iterator",
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.Map",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.PriorityQueue",
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java.util.Queue"
+},
+{
+  "name":"java.util.TimeZone",
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.concurrent.ConcurrentHashMap",
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java.util.regex.MatchResult",
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.regex.Matcher",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.Amount",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.As",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.HasChronology",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.HasFields",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.HasProperties",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.HasUnits",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.HasZone",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.KnowsIfLeap",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.KnowsTimeBetween",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.Minusable",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.Multipliable",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.Ordered",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.Plusable",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.ReadableProperty",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.ReadableRangeProperty",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.Supporting",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.Truncatable",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.WritableProperty",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.core.WritableRangeProperty",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.graph.Conversion",
+  "allPublicFields":true,
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.graph.ConversionGraph",
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.graph.ConversionPath",
+  "allPublicFields":true,
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.graph.IConversionGraph",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.graph.Types",
+  "allPublicFields":true,
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.interval.AnyInterval",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.mock.IMockClock",
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.mock.proxy$java.time.Clock$IMockClock$fd7b5c79",
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.properties.FieldGroup",
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.properties.UnitGroup",
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.temporal.DayOfWeekFieldProperty",
+  "allPublicFields":true,
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.temporal.DurationUnitProperty",
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.temporal.MonthDayFieldProperty",
+  "allPublicFields":true,
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.temporal.MonthFieldProperty",
+  "allPublicFields":true,
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.temporal.PeriodUnitProperty",
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.temporal.PropertyFactory",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java_time.temporal.TemporalAmountUnitProperty",
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.temporal.TemporalFieldProperty",
+  "allPublicFields":true,
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.temporal.ZoneOffsetFieldProperty",
+  "allPublicFields":true,
+  "allPublicMethods":true,
+  "allPublicConstructors":true
+},
+{
+  "name":"java_time.zone.HasOffset",
+  "allPublicMethods":true
+}
+]

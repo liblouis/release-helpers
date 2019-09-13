@@ -49,6 +49,88 @@ Warning: Reflection method java.lang.Class.getFields invoked at clojure.lang.Ref
 Warning: Aborting stand-alone image build due to reflection use without configuration.
 #+END_EXAMPLE
 
+** Reflection and resource configuration
+As outlined in [[https://medium.com/graalvm/introducing-the-tracing-agent-simplifying-graalvm-native-image-configuration-c3b56c486271][Introducing the Tracing Agent]] you can help GraalVM with
+a config file where you help it find classes normally found with
+reflection.
+
+First let the tracing agent analyse the program:
+
+#+BEGIN_SRC shell
+mkdir -p META-INF/native-image
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GRAALVM_HOME/jre/lib/amd64
+clj -J-agentlib:native-image-agent=config-output-dir=META-INF/native-image -m release-helper ~/src/liblouis ~/src/liblouis.github.io
+#+END_SRC
+
+Then clean up the generated files in ~META-INF/native-image~ by
+removing some dynamically generated classes and specify the config
+files in ~deps.edn~:
+
+#+BEGIN_SRC clojure
+  {:native-image
+   {:main-opts ["-m clj.native-image release_helper"
+		"--initialize-at-build-time"
+		"-H:ReflectionConfigurationFiles=META-INF/native-image/reflect-config.json"
+		"-H:ResourceConfigurationFiles=META-INF/native-image/resource-config.json"
+		;; optional native image name override
+		"-H:Name=liblouis_release_helper"]}}
+#+END_SRC
+
+Finaly build the native image:
+
+#+BEGIN_SRC shell
+clojure -A:native-image
+#+END_SRC
+
+It does build a native image, however it fails with an exception.
+GraalVM seems to have a problem somewhere in java_time:
+
+#+BEGIN_SRC shell
+eglic@wharton:~/src/liblouis-release-helper$ ./release_helper ~/src/liblouis ~/src/liblouis.github.io
+Exception in thread "main" java.lang.ClassCastException: java_time.graph.Types cannot be cast to java.lang.Comparable
+	at clojure.lang.Util.compare(Util.java:153)
+	at clojure.lang.APersistentVector.compareTo(APersistentVector.java:439)
+	at java.util.concurrent.ConcurrentHashMap.compareComparables(ConcurrentHashMap.java:732)
+	at java.util.concurrent.ConcurrentHashMap$TreeBin.<init>(ConcurrentHashMap.java:2773)
+	at java.util.concurrent.ConcurrentHashMap.treeifyBin(ConcurrentHashMap.java:2630)
+	at java.util.concurrent.ConcurrentHashMap.putVal(ConcurrentHashMap.java:1063)
+	at java.util.concurrent.ConcurrentHashMap.putIfAbsent(ConcurrentHashMap.java:1535)
+	at java_time.potemkin.util$fast_memoize$fn__1405.invoke(util.clj:50)
+	at java_time.graph$has_source_type_QMARK_$contains_src_types_QMARK___1715$fn__1716.invoke(graph.clj:279)
+	at clojure.core$some.invokeStatic(core.clj:2701)
+	at java_time.graph$has_source_type_QMARK_$contains_src_types_QMARK___1715.invoke(graph.clj:279)
+	at clojure.core$some.invokeStatic(core.clj:2701)
+	at java_time.graph$has_source_type_QMARK_.invokeStatic(graph.clj:282)
+	at java_time.graph$fn__1742.invokeStatic(graph.clj:301)
+	at java_time.graph$fn__1742.invoke(graph.clj:300)
+	at java_time.potemkin.util$fast_memoize$fn__1405.invoke(util.clj:52)
+	at java_time.graph$conversion_fn.invokeStatic(graph.clj:316)
+	at java_time.local$local_date.invokeStatic(local.clj:12)
+	at release_helper$to_date.invokeStatic(release_helper.clj:19)
+	at release_helper$to_date.invoke(release_helper.clj:15)
+	at clojure.core$map$fn__5870.invoke(core.clj:2760)
+	at clojure.lang.LazySeq.sval(LazySeq.java:42)
+	at clojure.lang.LazySeq.seq(LazySeq.java:51)
+	at clojure.lang.RT.seq(RT.java:535)
+	at clojure.core$seq__5402.invokeStatic(core.clj:137)
+	at clojure.core$drop_while$step__5940.invoke(core.clj:2972)
+	at clojure.core$drop_while$fn__5943.invoke(core.clj:2977)
+	at clojure.lang.LazySeq.sval(LazySeq.java:42)
+	at clojure.lang.LazySeq.seq(LazySeq.java:51)
+	at clojure.lang.LazySeq.first(LazySeq.java:73)
+	at clojure.lang.RT.first(RT.java:692)
+	at clojure.core$first__5384.invokeStatic(core.clj:55)
+	at release_helper$next_release_date.invokeStatic(release_helper.clj:29)
+	at release_helper$next_release_date.invoke(release_helper.clj:29)
+	at release_helper$next_release_date.invokeStatic(release_helper.clj:34)
+	at release_helper$announcement.invokeStatic(release_helper.clj:66)
+	at release_helper$_main.invokeStatic(release_helper.clj:154)
+	at release_helper$_main.invoke(release_helper.clj:143)
+	at clojure.lang.AFn.applyToHelper(AFn.java:156)
+	at clojure.lang.AFn.applyTo(AFn.java:144)
+	at release_helper.main(Unknown Source)
+#+END_SRC
+
 * Rationale
 
 Why do we need these scripts in the first place? Well, creating a
