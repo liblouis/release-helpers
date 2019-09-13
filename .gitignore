@@ -1,9 +1,5 @@
 /.cpcache/
 /.nrepl-port
 *~
-/*-release-*.md
-/ANNOUNCEMENT
-/download-index.md
-/liblouis.html
 /liblouis_release_helper
 classes/
