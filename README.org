@@ -131,6 +131,95 @@ Exception in thread "main" java.lang.ClassCastException: java_time.graph.Types c
 	at release_helper.main(Unknown Source)
 #+END_SRC
 
+** Reflection and resource configuration II
+
+FIXME: The above is probably wrong as you should probably run the
+tracing agent on a compiled jar.
+
+#+BEGIN_SRC shell
+mkdir -p META-INF/native-image
+export JAVA_HOME=$GRAALVM_HOME
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GRAALVM_HOME/jre/lib/amd64
+$JAVA_HOME/bin/java -agentlib:native-image-agent=config-output-dir=META-INF/native-image -jar liblouis-release-helper-1.0.0-SNAPSHOT-standalone.jar ~/src/liblouis ~/src/liblouis.github.io
+#+END_SRC
+
+The generated files will not have to be cleaned up. Finaly build the native image:
+
+#+BEGIN_SRC shell
+clojure -A:native-image
+#+END_SRC
+
+It does build a native image, however it fails with the same
+exception as above.
+
+
+* Native Image II
+
+I also tried to build a native image using [[https://github.com/luchiniatwork/cambada][Cambada]].
+
+The native image builds as described in [[https://github.com/luchiniatwork/cambada#packaging-as-a-native-image][Packaging as a Native Image]].
+There is no need to fidget with any resource files.
+
+#+BEGIN_SRC clojure
+{:aliases {:native-image
+           {:extra-deps
+            {luchiniatwork/cambada {:mvn/version "1.0.0"}}
+            :main-opts ["-m" "cambada.native-image"
+                        "-m" "release_helper"]}}}
+#+END_SRC
+
+#+BEGIN_SRC shell
+$ clj -A:native-image
+Cleaning target
+Creating target/classes
+  Compiling release-helper
+Creating target/liblouis-release-helper
+[target/liblouis-release-helper:15499]    classlist:   7,335.53 ms
+[target/liblouis-release-helper:15499]        (cap):   3,880.57 ms
+[target/liblouis-release-helper:15499]        setup:   6,412.06 ms
+[target/liblouis-release-helper:15499]   (typeflow):   9,785.53 ms
+[target/liblouis-release-helper:15499]    (objects):   4,690.54 ms
+[target/liblouis-release-helper:15499]   (features):     737.32 ms
+[target/liblouis-release-helper:15499]     analysis:  15,488.75 ms
+[target/liblouis-release-helper:15499]     (clinit):     392.64 ms
+[target/liblouis-release-helper:15499]     universe:     977.00 ms
+[target/liblouis-release-helper:15499]      (parse):   2,318.94 ms
+[target/liblouis-release-helper:15499]     (inline):   2,539.65 ms
+[target/liblouis-release-helper:15499]    (compile):  15,378.09 ms
+[target/liblouis-release-helper:15499]      compile:  21,142.38 ms
+[target/liblouis-release-helper:15499]        image:   1,257.28 ms
+[target/liblouis-release-helper:15499]        write:     788.60 ms
+[target/liblouis-release-helper:15499]      [total]:  53,768.17 ms
+
+Done!
+#+END_SRC
+
+However the resulting image fails even earlier:
+
+Unfortunatelly at the moment GraalVM doesn't like some of the code.
+
+#+BEGIN_EXAMPLE
+eglic@wharton:~/src/liblouis-release-helper$ ./target/liblouis-release-helper ~/src/liblouis ~/src/liblouis.github.io
+Exception in thread "main" java.lang.ExceptionInInitializerError
+	at com.oracle.svm.core.hub.ClassInitializationInfo.initialize(ClassInitializationInfo.java:290)
+	at java.lang.Class.ensureInitialized(DynamicHub.java:467)
+	at clojure.lang.Namespace.<init>(Namespace.java:34)
+	at clojure.lang.Namespace.findOrCreate(Namespace.java:176)
+	at clojure.lang.Var.internPrivate(Var.java:153)
+	at release_helper.<clinit>(Unknown Source)
+	at com.oracle.svm.core.hub.ClassInitializationInfo.invokeClassInitializer(ClassInitializationInfo.java:350)
+	at com.oracle.svm.core.hub.ClassInitializationInfo.initialize(ClassInitializationInfo.java:270)
+	at java.lang.Class.ensureInitialized(DynamicHub.java:467)
+Caused by: java.io.FileNotFoundException: Could not locate clojure/core__init.class or clojure/core.clj on classpath.
+	at clojure.lang.RT.load(RT.java:463)
+	at clojure.lang.RT.load(RT.java:426)
+	at clojure.lang.RT.doInit(RT.java:468)
+	at clojure.lang.RT.<clinit>(RT.java:336)
+	at com.oracle.svm.core.hub.ClassInitializationInfo.invokeClassInitializer(ClassInitializationInfo.java:350)
+	at com.oracle.svm.core.hub.ClassInitializationInfo.initialize(ClassInitializationInfo.java:270)
+	... 8 more
+#+END_EXAMPLE
+
 * Rationale
 
 Why do we need these scripts in the first place? Well, creating a
