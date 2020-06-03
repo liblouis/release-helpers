@@ -21,7 +21,7 @@ Then run the release-helper script. Specify where the source to
 liblouis and the liblouis website is located
 
 #+BEGIN_SRC shell
-clj -m release-helper ~/src/liblouis ~/src/liblouis.github.io
+clojure -m release-helper ~/src/liblouis ~/src/liblouis.github.io
 #+END_SRC
 
 ** Liblouisutdml
@@ -36,7 +36,7 @@ Then run the release-helper script. Specify where the source to
 liblouis and the liblouis website is located
 
 #+BEGIN_SRC shell
-clj -m release-helper ~/src/liblouisutdml ~/src/liblouis.github.io
+clojure -m release-helper ~/src/liblouisutdml ~/src/liblouis.github.io
 #+END_SRC
 
 All the generated artifacts in ~~/src/liblouisutdml~ and
