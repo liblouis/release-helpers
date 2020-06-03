@@ -133,7 +133,7 @@ title: %s User's and Programmer's Manual
 (defn create-release-description
   [project news target-path]
   (let [version (extract-version news)
-        markdown (:out (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none" :in (-> news normalize-title)))
+        markdown (:out (shell/sh "pandoc" "--from=org" "--to=gfm" "--wrap=none" :in (-> news normalize-title)))
         env {:project project
              :version version
              :changes markdown}
