@@ -15,6 +15,7 @@ First build liblouis
 #+BEGIN_SRC shell
 cd ~/src/liblouis
 make dist
+make distwin
 #+END_SRC
 
 Then run the release-helper script. Specify where the source to

@@ -145,8 +145,11 @@ title: %s User's and Programmer's Manual
   (let [version (extract-version news)
         tag (format " v%s" version)
         zip (format "%s-%s.zip" project version)
-        tar (format "%s-%s.tar.gz" project version)]
-    (format "hub release create -a %s -a %s -F %s %s" zip tar (.getName description-file) tag)))
+        tar (format "%s-%s.tar.gz" project version)
+        win32 (format "%s-%s-win32.zip" project version)
+        win64 (format "%s-%s-win64.zip" project version)]
+    (format "hub release create -a %s -a %s -a %s -a %s -F %s %s" zip tar win32 win64
+            (.getName description-file) tag)))
 
 (defn -main [source-path website-path]
   (let [project (if (string/includes? source-path "utdml") "liblouisutdml" "liblouis")
