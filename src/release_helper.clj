@@ -55,12 +55,10 @@
   (string/replace changes #"(?sm)^\* Noteworthy changes in release \d+\.\d+\.\d+ \(\d+-\d+-\d+\)" ""))
 
 (defn inject-toc [changes]
-  (string/replace changes #"(?sm)\[the\s+list\s+of\s+closed\s+issues\]\]." "$0
+  (string/replace changes #"(?sm)\(https://github.com/liblouis/liblouis/milestone/\d+\?closed=1\)\." "$0
 
-#+begin_export markdown
 * Will be replaced with the ToC
 {:toc}
-#+end_export
 "))
 
 (defn announcement
@@ -89,13 +87,16 @@
   can be used in a Jekyll website. The file will be placed in
   `target-path`."
   [project news target-path]
-  (let [news (-> news inject-toc)
-        version (extract-version news)]
-    (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none"
-              "--standalone" ;; so that meta data is emitted
-              (str "--output=" target-path)
-              (str "--metadata=title:" (format "%s Release " (string/capitalize project)) version)
-              (format "--metadata=category:%s" (string/capitalize project)) :in (-> news drop-title))))
+  (let [version (extract-version news)]
+    (->>
+     (shell/sh "pandoc" "--from=org" "--to=markdown" "--wrap=none"
+               "--standalone" ;; so that meta data is emitted
+               (str "--metadata=title:" (format "%s Release " (string/capitalize project)) version)
+               (format "--metadata=category:%s" (string/capitalize project)) :in (-> news drop-title))
+     :out
+     ;; inject a magic string into the generated markdown that will cause a toc to be generated
+     inject-toc
+     (spit target-path))))
 
 (defn download-index
   "Given the `news` for a release, generate a markdown download index
