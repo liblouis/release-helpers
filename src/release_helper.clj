@@ -2,7 +2,8 @@
   (:require [java-time :as time]
             [clojure.java.shell :as shell]
             [clojure.string :as string]
-            [cljstache.core :as template]
+            [selmer.parser :as parser]
+            [selmer.util :refer [without-escaping]]
             [clojure.java.io :as io])
   (:import java.time.format.DateTimeFormatter))
 
@@ -71,7 +72,8 @@
              :changes (-> news milestone-link-to-footnote normalize-title)}]
     (shell/sh "pandoc" "--from=org" "--to=rst"
               (format "--output=%s" (.getPath target-path))
-              :in (template/render-resource (format "announcement-%s.org" project) env))))
+              :in (without-escaping
+                   (parser/render-file (format "announcement-%s.org" project) env)))))
 
 (defn news-post-name
   "Extract the version from a `news` and combine with todays date to
@@ -139,7 +141,7 @@ title: %s User's and Programmer's Manual
         env {:project project
              :version version
              :changes markdown}
-        description (template/render-resource "release-file.txt" env)]
+        description (without-escaping (parser/render-file "release-file.txt" env))]
     (spit target-path description)))
 
 (defn create-release-command
@@ -173,6 +175,6 @@ title: %s User's and Programmer's Manual
     (download-index project news download-index-file)
     (online-documentation project documentation-file online-documentation-file)
     (create-release-description project news release-description-file)
-    (println (template/render-resource "feedback.txt" env))
+    (println (without-escaping (parser/render-file "feedback.txt" env)))
     ;; see https://clojureverse.org/t/why-doesnt-my-program-exit/3754/7 why exit is needed
     (System/exit 0)))
