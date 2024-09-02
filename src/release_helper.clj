@@ -130,7 +130,7 @@ title: %s User's and Programmer's Manual
 " (string/capitalize project))
         fixed (->
                doc
-               (string/replace #"(?sm)<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">.*<h1 class=\"settitle\" align=\"center\">Liblouis(?:utdml)? User&rsquo;s and Programmer&rsquo;s Manual</h1>\s*" title)
+               (string/replace #"(?sm)<!DOCTYPE html>.*</a></span></h1>\s*" title)
                (string/replace #"(?sm)\s+</body>\s+</html>" ""))]
     (spit target-path fixed)))
 
