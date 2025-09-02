@@ -4,7 +4,8 @@
             [clojure.string :as string]
             [selmer.parser :as parser]
             [selmer.util :refer [without-escaping]]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [babashka.fs :as fs])
   (:import java.time.format.DateTimeFormatter))
 
 ;; Release dates are always on Monday of ISO week 10, 23, 36 and 49
@@ -116,6 +117,20 @@
         new-content (reduce (fn [content [regexp replacement]] (string/replace content regexp replacement)) content (get regexps project))]
     (spit target-path new-content)))
 
+(defn- fix-html-index
+  [doc]
+  (->
+   doc
+   (string/replace #"(?sm)<!DOCTYPE html>.*</a></span></h1>\s*" "")
+   (string/replace #"(?sm)\s+</body>\s+</html>\s*" "")))
+
+(defn- fix-html
+  [doc]
+  (->
+   doc
+   (string/replace #"(?sm)<!DOCTYPE html>.*<body lang=\"en\">\s*" "")
+   (string/replace #"(?sm)\s+</body>\s+</html>\s*" "")))
+
 (defn online-documentation
   "Given the html documentation for a release massage it so that it
   can be placed on the Jekyll based website. Basically rip out the
@@ -123,16 +138,13 @@
   The file will be placed in `target-path`."
   [project documentation-file target-path]
   (let [doc (slurp documentation-file)
-        title (format "---
-title: %s User's and Programmer's Manual
----
-
-" (string/capitalize project))
-        fixed (->
-               doc
-               (string/replace #"(?sm)<!DOCTYPE html>.*</a></span></h1>\s*" title)
-               (string/replace #"(?sm)\s+</body>\s+</html>" ""))]
-    (spit target-path fixed)))
+        ;; files containing a <h1> need to be massaged differently
+        index? (string/includes? doc "<h1")
+        fixed (if index? (fix-html-index doc) (fix-html doc))
+        documentation (without-escaping
+                       (parser/render-file "documentation.html"
+                                           {:project project :body fixed :index index?}))]
+    (spit target-path documentation)))
 
 (defn create-release-description
   [project news target-path]
@@ -173,7 +185,13 @@ title: %s User's and Programmer's Manual
     (announcement project news announcement-file)
     (news-post project news news-post-file)
     (download-index project news download-index-file)
-    (online-documentation project documentation-file online-documentation-file)
+    (when (fs/regular-file? documentation-file)
+      (online-documentation project documentation-file online-documentation-file))
+    (when (fs/directory? documentation-file)
+      (doseq [documentation-file (fs/glob documentation-file "*.html")]
+        (let [file-name (fs/file-name documentation-file)
+              online-documentation-file (io/file website-path "documentation" project file-name)]
+          (online-documentation project (fs/file documentation-file) online-documentation-file))))
     (create-release-description project news release-description-file)
     (println (without-escaping (parser/render-file "feedback.txt" env)))
     ;; see https://clojureverse.org/t/why-doesnt-my-program-exit/3754/7 why exit is needed
