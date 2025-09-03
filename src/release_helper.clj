@@ -117,34 +117,42 @@
         new-content (reduce (fn [content [regexp replacement]] (string/replace content regexp replacement)) content (get regexps project))]
     (spit target-path new-content)))
 
-(defn- fix-html-index
-  [doc]
-  (->
-   doc
-   (string/replace #"(?sm)<!DOCTYPE html>.*</a></span></h1>\s*" "")
-   (string/replace #"(?sm)\s+</body>\s+</html>\s*" "")))
-
-(defn- fix-html
-  [doc]
-  (->
-   doc
-   (string/replace #"(?sm)<!DOCTYPE html>.*<body lang=\"en\">\s*" "")
-   (string/replace #"(?sm)\s+</body>\s+</html>\s*" "")))
-
 (defn online-documentation
   "Given the html documentation for a release massage it so that it
   can be placed on the Jekyll based website. Basically rip out the
   embedded style info so that the one from the Jekyll theme is used.
   The file will be placed in `target-path`."
   [project documentation-file target-path]
-  (let [doc (slurp documentation-file)
-        ;; files containing a <h1> need to be massaged differently
-        index? (string/includes? doc "<h1")
-        fixed (if index? (fix-html-index doc) (fix-html doc))
-        documentation (without-escaping
-                       (parser/render-file "documentation.html"
-                                           {:project project :body fixed :index index?}))]
-    (spit target-path documentation)))
+  (let [content (slurp documentation-file)
+        metadata (format "---\ntitle: %s User's and Programmer's Manual\n---\n" (string/capitalize project))
+        fixed (-> content
+                  ;; remove everything up to the first <h1> and add a <div class="top-level-extent"> instead
+                  (string/replace #"(?sm)<!DOCTYPE html>.*</a></span></h1>" "<div class=\"top-level-extent\" id=\"Top\">")
+                  ;; remove the closing <body> and <html> tags
+                  (string/replace #"(?sm)\s+</body>\s+</html>\s*" "\n"))
+        ;; prepend the markdown metadata
+        fixed (str metadata fixed)]
+    (spit target-path fixed)))
+
+(defn online-documentation-multi-page
+  "Just like [online-documentation] but for multi-page html documentation."
+  [project documentation-path target-path]
+  ;; copy and fix all html files
+  (doseq [documentation-file (fs/glob documentation-path "*.html")]
+    (let [file-name (fs/file-name documentation-file)
+          target-file (io/file target-path file-name)]
+      (let [content (slurp (fs/file documentation-file))
+            metadata (format "---\ntitle: %s User's and Programmer's Manual\n---\n" (string/capitalize project))
+            fixed (-> content
+                      ;; remove everything up to the body <body>
+                      (string/replace #"(?sm)<!DOCTYPE html>.*<body lang=\"en\">\s*" "")
+                      ;; remove the closing <body> and <html> tags
+                      (string/replace #"(?sm)\s+</body>\s+</html>\s*" "\n"))
+            ;; prepend the markdown metadata
+            fixed (str metadata fixed)]
+        (spit target-file fixed))))
+  ;; the index file needs special treatment
+  (online-documentation project (io/file documentation-path "index.html") (io/file target-path "index.html")))
 
 (defn create-release-description
   [project news target-path]
@@ -175,6 +183,7 @@
         download-index-file (io/file website-path "downloads" "index.md")
         documentation-file (io/file source-path "doc" (format "%s.html" project))
         online-documentation-file (io/file website-path "documentation" (format "%s.html" project))
+        online-documentation-multi-page-path (io/file website-path "documentation" project)
         release-description-file (io/file source-path "release-description.txt")
         announcement-file (io/file source-path "ANNOUNCEMENT")
         env {:source-path source-path
@@ -185,13 +194,9 @@
     (announcement project news announcement-file)
     (news-post project news news-post-file)
     (download-index project news download-index-file)
-    (when (fs/regular-file? documentation-file)
+    (if (fs/directory? documentation-file)
+      (online-documentation-multi-page project documentation-file online-documentation-multi-page-path)
       (online-documentation project documentation-file online-documentation-file))
-    (when (fs/directory? documentation-file)
-      (doseq [documentation-file (fs/glob documentation-file "*.html")]
-        (let [file-name (fs/file-name documentation-file)
-              online-documentation-file (io/file website-path "documentation" project file-name)]
-          (online-documentation project (fs/file documentation-file) online-documentation-file))))
     (create-release-description project news release-description-file)
     (println (without-escaping (parser/render-file "feedback.txt" env)))
     ;; see https://clojureverse.org/t/why-doesnt-my-program-exit/3754/7 why exit is needed
