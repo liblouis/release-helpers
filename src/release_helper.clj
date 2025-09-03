@@ -182,6 +182,7 @@
         news-post-file (news-post-name project news website-path)
         download-index-file (io/file website-path "downloads" "index.md")
         documentation-file (io/file source-path "doc" (format "%s.html" project))
+        multi-page-documentation? (fs/directory? documentation-file)
         online-documentation-file (io/file website-path "documentation" (format "%s.html" project))
         online-documentation-multi-page-path (io/file website-path "documentation" project)
         release-description-file (io/file source-path "release-description.txt")
@@ -189,12 +190,14 @@
         env {:source-path source-path
              :news-post news-post-file
              :download-index (.getPath download-index-file)
+             :multi-page-documentation multi-page-documentation?
              :online-documentation (.getPath online-documentation-file)
+             :online-documentation-multi-page-path online-documentation-multi-page-path
              :command (create-release-command project news release-description-file)}]
     (announcement project news announcement-file)
     (news-post project news news-post-file)
     (download-index project news download-index-file)
-    (if (fs/directory? documentation-file)
+    (if multi-page-documentation?
       (online-documentation-multi-page project documentation-file online-documentation-multi-page-path)
       (online-documentation project documentation-file online-documentation-file))
     (create-release-description project news release-description-file)

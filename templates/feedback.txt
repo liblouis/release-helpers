@@ -3,7 +3,7 @@ The release artifacts have been created.
 
 - {{news-post}}
 - {{download-index}}
-- {{online-documentation}}
+{% if multi-page-documentation %}- {{online-documentation-multi-page-path}}/*.html{% else %}- {{online-documentation}}{% endif %}
 
 Commit them
 
